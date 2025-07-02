@@ -128,16 +128,5 @@
     "cwe": "CWE-918",
     "owaspReferencia": "https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_(SSRF)/",
     "recomendaciones": "Validar URLs. Restringir acceso de red desde servidores. Evitar seguir redirecciones."
-  },
-  {
-    "nombre": "A",
-    "tipo": "A",
-    "riesgo": "Bajo",
-    "descripcion": "A",
-    "recomendaciones": "A",
-    "fechaDeteccion": "2025-06-25",
-    "impacto": "A",
-    "ejemplo": "A",
-    "id": 11
   }
 ]

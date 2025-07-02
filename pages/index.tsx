@@ -1,7 +1,9 @@
+// Importación de hooks y componentes necesarios
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import Link from "next/link";
 
+// Definición de la interfaz que representa una vulnerabilidad
 interface Vulnerabilidad {
   id: number;
   nombre: string;
@@ -15,19 +17,23 @@ interface Vulnerabilidad {
   owaspReferencia: string;
 }
 
+// Componente principal de la página de inicio
 export default function Home() {
+  // Estados para almacenar datos y filtros
   const [data, setData] = useState<Vulnerabilidad[]>([]);
   const [filtroRiesgo, setFiltroRiesgo] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroFecha, setFiltroFecha] = useState("");
   const [mostrarBoton, setMostrarBoton] = useState(false);
 
+  // Carga inicial de datos desde la API
   useEffect(() => {
     fetch("/api/vulnerabilidades")
       .then((res) => res.json())
       .then(setData);
   }, []);
 
+  // Mostrar botón "Volver arriba" al hacer scroll
   useEffect(() => {
     const manejarScroll = () => {
       setMostrarBoton(window.scrollY > 300);
@@ -36,9 +42,11 @@ export default function Home() {
     return () => window.removeEventListener("scroll", manejarScroll);
   }, []);
 
+  // Opciones de filtrado
   const riesgos = ["", "Crítico", "Alto", "Medio", "Bajo"];
   const tipos = Array.from(new Set(data.map((v) => v.tipo)));
 
+  // Colores asociados a cada nivel de riesgo
   const colores: Record<string, string> = {
     Crítico: "bg-danger text-white",
     Alto: "bg-warning text-dark",
@@ -46,6 +54,7 @@ export default function Home() {
     Bajo: "bg-success text-white",
   };
 
+  // Aplicación de filtros a los datos
   const filtrado = data.filter((v) => {
     return (
       (!filtroRiesgo || v.riesgo === filtroRiesgo) &&
@@ -54,6 +63,7 @@ export default function Home() {
     );
   });
 
+  // Renderizado del componente
   return (
     <div
       style={{
@@ -74,7 +84,7 @@ export default function Home() {
         <Layout title="INKA Security - Dashboard">
           <h1 className="mb-4 text-white">Listado de Vulnerabilidades</h1>
 
-          {/* Filtros */}
+          {/* Filtros de búsqueda */}
           <div className="row g-3 mb-4">
             <div className="col-md-3">
               <select
@@ -110,7 +120,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Lista */}
+          {/* Lista de vulnerabilidades */}
           <div className="row gy-4">
             {filtrado.map((v) => (
               <div key={v.id} className="col-md-6">
@@ -183,6 +193,7 @@ export default function Home() {
               </div>
             ))}
 
+            {/* Mensaje si no hay resultados */}
             {filtrado.length === 0 && (
               <p className="text-muted mt-4">
                 No se encontraron vulnerabilidades con esos filtros.
@@ -190,7 +201,7 @@ export default function Home() {
             )}
           </div>
 
-          {/* Botón "Volver arriba" */}
+          {/* Botón para volver arriba */}
           {mostrarBoton && (
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
