@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-// Interfaz que define la estructura de una evidencia
+// Tipo de dato para una evidencia
 interface Evidencia {
   id: number;
   nombre: string;
@@ -9,55 +9,75 @@ interface Evidencia {
   esPrincipal: boolean;
 }
 
-// Componente que gestiona las evidencias de una vulnerabilidad
+// Componente
 export default function Evidencias({ vulnerabilidadId }: { vulnerabilidadId: number }) {
-  // Estado para almacenar las evidencias cargadas
   const [archivos, setArchivos] = useState<Evidencia[]>([]);
-
-  // Estado para indicar si se está subiendo un archivo
   const [subiendo, setSubiendo] = useState(false);
-
-  // Tipos de archivos permitidos
   const tiposPermitidos = ["application/pdf", "image/png", "image/jpeg"];
 
-  // Maneja la carga de archivos
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // ✅ Subida o reemplazo de archivo
+  const handleUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    reemplazarId?: number
+  ) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || files.length === 0) return;
 
     const formData = new FormData();
 
-    // Validación de tipo de archivo
     for (const file of Array.from(files)) {
       if (!tiposPermitidos.includes(file.type)) {
-        alert("Formato no permitido. Solo PDF, PNG y JPG.");
+        alert("Formato no permitido. Solo se aceptan PDF, PNG o JPG.");
         return;
       }
       formData.append("evidencias", file);
     }
 
-    // Enviar archivos al servidor
     setSubiendo(true);
-    await fetch(`/api/evidencias/${vulnerabilidadId}`, {
-      method: "POST",
-      body: formData,
-    });
-    setSubiendo(false);
 
-    // Nota: aquí podrías actualizar la lista de archivos desde el backend
+    try {
+      const res = await fetch(`/api/evidencias/${vulnerabilidadId}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      const nuevas = data.archivos.map((archivo: any) => ({
+        id: reemplazarId ?? Math.floor(Math.random() * 100000),
+        nombre: archivo.nombre,
+        tipo: archivo.tipo,
+        url: archivo.ruta, // ✅ URL real del archivo subido
+        esPrincipal: false,
+      }));
+
+      setArchivos((prev) => {
+        if (reemplazarId) {
+          return prev.map((e) => (e.id === reemplazarId ? nuevas[0] : e));
+        }
+        return [...prev, ...nuevas];
+      });
+    } catch (err) {
+      console.error("Error al subir archivo:", err);
+      alert("Hubo un error al subir el archivo.");
+    } finally {
+      setSubiendo(false);
+      e.target.value = "";
+    }
   };
 
-  // Marca una evidencia como principal
+  // 👉 Marcar como principal
   const seleccionarPrincipal = (id: number) => {
-    setArchivos(prev =>
-      prev.map(e => ({ ...e, esPrincipal: e.id === id }))
+    setArchivos((prev) =>
+      prev.map((e) => ({ ...e, esPrincipal: e.id === id }))
     );
+    // Bonus: podrías hacer un PATCH al backend para persistir esto
   };
 
-  // Elimina una evidencia de la lista (solo en el frontend)
+  // 👉 Eliminar archivo
   const eliminarArchivo = (id: number) => {
     if (confirm("¿Eliminar este archivo?")) {
-      setArchivos(prev => prev.filter(e => e.id !== id));
+      setArchivos((prev) => prev.filter((e) => e.id !== id));
     }
   };
 
@@ -65,17 +85,15 @@ export default function Evidencias({ vulnerabilidadId }: { vulnerabilidadId: num
     <div className="mt-5">
       <h5 className="text-light mb-3">🗂 Evidencias</h5>
 
-      {/* Input para subir archivos */}
       <input
         type="file"
         accept=".pdf,.png,.jpg,.jpeg"
         multiple
-        onChange={handleUpload}
+        onChange={(e) => handleUpload(e)}
         className="form-control mb-3"
         disabled={subiendo}
       />
 
-      {/* Lista de evidencias o mensaje si no hay */}
       {archivos.length === 0 ? (
         <p className="text-white">No hay evidencias cargadas.</p>
       ) : (
@@ -92,6 +110,7 @@ export default function Evidencias({ vulnerabilidadId }: { vulnerabilidadId: num
                   <span className="badge bg-primary ms-2">Principal</span>
                 )}
               </div>
+
               <div className="btn-group">
                 <button
                   className="btn btn-outline-success btn-sm"
@@ -99,6 +118,7 @@ export default function Evidencias({ vulnerabilidadId }: { vulnerabilidadId: num
                 >
                   Marcar principal
                 </button>
+
                 <a
                   href={evidencia.url}
                   target="_blank"
@@ -107,6 +127,17 @@ export default function Evidencias({ vulnerabilidadId }: { vulnerabilidadId: num
                 >
                   Ver
                 </a>
+
+                <label className="btn btn-outline-warning btn-sm mb-0">
+                  Reemplazar
+                  <input
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    hidden
+                    onChange={(e) => handleUpload(e, evidencia.id)}
+                  />
+                </label>
+
                 <button
                   className="btn btn-outline-danger btn-sm"
                   onClick={() => eliminarArchivo(evidencia.id)}
