@@ -88,11 +88,15 @@ export default function Admin() {
   };
 
   // Función que carga los datos de una vulnerabilidad al formulario para ser editados
-  const cargarParaEditar = (v: Vulnerabilidad) => {
-    const { id, ...resto } = v; // separamos el ID del resto de los campos
-    setForm(resto);             // cargamos los campos al formulario
-    setEditId(id);              // guardamos el ID para futura actualización
-  };
+const cargarParaEditar = (v: Vulnerabilidad) => {
+  const { id, ...resto } = v;
+  setForm(resto);
+  setEditId(id);
+
+  //Llevar al usuario hacia arriba suavemente
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 
 // Restaura el formulario a su estado inicial (campos vacíos o valor por defecto)
 const resetForm = () => {
