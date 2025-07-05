@@ -1,3 +1,5 @@
+//Lo que hice para que funcionar el poder subir archivos, fue mover la carpeta evidencias a "api" bien colocado
+//Y mas que nada fue ese el cambio para que funcionara
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import fs from "fs";
