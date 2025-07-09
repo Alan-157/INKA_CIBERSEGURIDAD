@@ -56,14 +56,14 @@ export default function Layout({ children, title }: { children: ReactNode; title
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow fixed-top">
         <div className="container">
           <Link className="navbar-brand fw-bold" href="/">
-            INKA CIBERSEGURIDAD pepe.
+            INKA CIBERSEGURIDAD
           </Link>
           <div className="d-flex gap-2">
             <Link className="btn btn-outline-light btn-sm" href="/">
               INICIO
             </Link>
             <Link className="btn btn-outline-light btn-sm" href="/admin">
-              Administraación
+              Administración
             </Link>
           </div>
         </div>
