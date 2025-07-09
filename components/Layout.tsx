@@ -63,7 +63,7 @@ export default function Layout({ children, title }: { children: ReactNode; title
               INICIO
             </Link>
             <Link className="btn btn-outline-light btn-sm" href="/admin">
-              Administración
+              Administraación
             </Link>
           </div>
         </div>
