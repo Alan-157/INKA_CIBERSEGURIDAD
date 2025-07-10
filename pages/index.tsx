@@ -1,7 +1,7 @@
 // Importación de hooks y componentes necesarios
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import Link from "next/link";
+#import Link from "next/link";
 
 // Definición de la interfaz que representa una vulnerabilidad
 interface Vulnerabilidad {
@@ -20,7 +20,7 @@ interface Vulnerabilidad {
 // Componente principal de la página de inicio
 export default function Home() {
   // Estados para almacenar datos y filtros
-  const [data, setData] = useState<Vulnerabilidad[]>([]);
+  #const [data, setData] = useState<Vulnerabilidad[]>([]);
   const [filtroRiesgo, setFiltroRiesgo] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroFecha, setFiltroFecha] = useState("");
